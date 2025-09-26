@@ -2300,6 +2300,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   weed: {fileID: 0}
+  isMove: 0
 --- !u!1 &1073736105
 GameObject:
   m_ObjectHideFlags: 0
@@ -4674,7 +4675,7 @@ SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
   - {fileID: 981521562}
+  - {fileID: 1069222698}
   - {fileID: 1081644018}
   - {fileID: 828081437}
   - {fileID: 1748257341}
-  - {fileID: 1069222698}
