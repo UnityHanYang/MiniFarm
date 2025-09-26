@@ -6,6 +6,7 @@ public class Weed : MonoBehaviour
 {
     private Transform mainCameraParent;
     private CameraController cameraController;
+    public GameObject weedRemoveUI;
 
     private void Start()
     {
