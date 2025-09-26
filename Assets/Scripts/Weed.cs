@@ -6,7 +6,6 @@ public class Weed : MonoBehaviour
 {
     private Transform mainCameraParent;
     private CameraController cameraController;
-    public GameObject weedRemoveUI;
 
     private void Start()
     {
@@ -49,7 +48,8 @@ public class Weed : MonoBehaviour
             mainCameraParent.transform.position = Vector3.Slerp(mainCameraParent.transform.position, worldPos, 0.2f);
             yield return null;
         }
-
+        cameraController.weedRemoveUI.SetActive(true);
+        cameraController.weedRemoveUI.transform.position = transform.position + new Vector3(0.25f, 0.25f, 0);
         mainCameraParent.transform.position = worldPos;
     }
 }

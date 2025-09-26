@@ -1,9 +1,11 @@
+using TMPro.Examples;
 using UnityEngine;
 
 public class CameraController : MonoBehaviour
 {
     public Weed weed;
     public bool isMove = false;
+    public GameObject weedRemoveUI;
 
     private float speed = 3f;
     private Vector2 lastTouchPosition;
@@ -26,7 +28,7 @@ public class CameraController : MonoBehaviour
         {
             isMove = true;
             weed = null;
-
+            weedRemoveUI.SetActive(false);
             Vector3 delta = Input.GetTouch(0).position - lastTouchPosition;
             delta = delta.normalized;
             transform.Translate(-delta.x * speed * Time.deltaTime, -delta.y * speed * Time.deltaTime, 0);
