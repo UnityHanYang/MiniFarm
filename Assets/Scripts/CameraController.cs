@@ -1,18 +1,27 @@
-using TMPro.Examples;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class CameraController : MonoBehaviour
 {
     public Weed weed;
     public bool isMove = false;
     public GameObject weedRemoveUI;
+    public bool isTouch = false;
+    public Button removeBtn;
 
-    private float speed = 3f;
+    private bool isMoveTouch = false;
+    private float speed = 4f;
     private Vector2 lastTouchPosition;
+    private float touchTime = 0f;
 
     private void Update()
     {
         CheckClick();
+
+        if(isTouch)
+        {
+            CheckTouch();
+        }
     }
 
     private void CheckClick()
@@ -22,18 +31,36 @@ public class CameraController : MonoBehaviour
         if (Input.GetTouch(0).phase == TouchPhase.Began)
         {
             isMove = false;
+            isTouch = true;
+            touchTime = 0f;
             lastTouchPosition = Input.GetTouch(0).position;
         }
-        else if (Input.GetTouch(0).phase == TouchPhase.Moved)
+        else if (Input.GetTouch(0).phase == TouchPhase.Moved /*&& isMoveTouch*/)
         {
             isMove = true;
             weed = null;
             weedRemoveUI.SetActive(false);
             Vector3 delta = Input.GetTouch(0).position - lastTouchPosition;
-            delta = delta.normalized;
+            delta = delta.normalized;   
             transform.Translate(-delta.x * speed * Time.deltaTime, -delta.y * speed * Time.deltaTime, 0);
             //transform.position = StandardPos();
             lastTouchPosition = Input.GetTouch(0).position;
+        }
+        else if(Input.GetTouch(0).phase == TouchPhase.Ended)
+        {
+            isTouch = false;
+            isMoveTouch = false;
+            touchTime = 0f;
+        }
+    }
+
+    private void CheckTouch()
+    {
+        touchTime += Time.deltaTime;
+
+        if (touchTime > 0.5f)
+        {
+            isMoveTouch = true;
         }
     }
 

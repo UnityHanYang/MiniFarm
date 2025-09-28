@@ -1,11 +1,13 @@
 using System.Collections;
-using TMPro.Examples;
 using UnityEngine;
 
 public class Weed : MonoBehaviour
 {
     private Transform mainCameraParent;
     private CameraController cameraController;
+    private bool isRemoveTouch = false;
+    private int removeTouchCount = 0;
+    private int removeTouchMax = 5;
 
     private void Start()
     {
@@ -29,10 +31,21 @@ public class Weed : MonoBehaviour
             {
                 if (hit.collider.gameObject.Equals(gameObject))
                 {
-                    if (cameraController != null && cameraController.weed == this) return;
+                    if (!isRemoveTouch)
+                    {
+                        if (cameraController != null && cameraController.weed == this) return;
 
-                    cameraController.weed = this;
-                    StartCoroutine(FocusOnTarget(Input.GetTouch(0).position));
+                        cameraController.weed = this;
+                        StartCoroutine(FocusOnTarget(Input.GetTouch(0).position));
+                    }
+                    else
+                    {
+                        removeTouchCount++;
+                        if(removeTouchMax == removeTouchCount)
+                        {
+                            gameObject.SetActive(false);
+                        }
+                    }
                 }
             }
         }
@@ -48,8 +61,16 @@ public class Weed : MonoBehaviour
             mainCameraParent.transform.position = Vector3.Slerp(mainCameraParent.transform.position, worldPos, 0.2f);
             yield return null;
         }
+        cameraController.removeBtn.onClick.RemoveAllListeners();
         cameraController.weedRemoveUI.SetActive(true);
         cameraController.weedRemoveUI.transform.position = transform.position + new Vector3(0.25f, 0.25f, 0);
+        cameraController.removeBtn.onClick.AddListener(RemoveClick);
         mainCameraParent.transform.position = worldPos;
+    }
+
+    public void RemoveClick()
+    {
+        isRemoveTouch = true;
+        cameraController.weedRemoveUI.SetActive(false);
     }
 }
