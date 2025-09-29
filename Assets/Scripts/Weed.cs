@@ -41,14 +41,23 @@ public class Weed : MonoBehaviour
                     else
                     {
                         removeTouchCount++;
-                        if(removeTouchMax == removeTouchCount)
+                        SliderControl();
+                        if (removeTouchMax == removeTouchCount)
                         {
                             gameObject.SetActive(false);
+                            cameraController.slider.gameObject.SetActive(false);
                         }
                     }
                 }
             }
         }
+    }
+
+    private void SliderControl()
+    {
+        cameraController.slider.gameObject.SetActive(true);
+        cameraController.slider.transform.position = transform.position + new Vector3(0, 0.27f, 0);
+        cameraController.slider.value = removeTouchCount;
     }
 
     IEnumerator FocusOnTarget(Vector3 touchPos)

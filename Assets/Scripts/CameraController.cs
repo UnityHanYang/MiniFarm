@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public class CameraController : MonoBehaviour
@@ -8,6 +9,7 @@ public class CameraController : MonoBehaviour
     public GameObject weedRemoveUI;
     public bool isTouch = false;
     public Button removeBtn;
+    public Slider slider;
 
     private bool isMoveTouch = false;
     private float speed = 4f;
@@ -26,7 +28,8 @@ public class CameraController : MonoBehaviour
 
     private void CheckClick()
     {
-        if (Input.touchCount > 1 || Input.touchCount == 0) return;
+        if (Input.touchCount > 1 || Input.touchCount == 0 || EventSystem.current.IsPointerOverGameObject(Input.GetTouch(0).fingerId))
+            return;
 
         if (Input.GetTouch(0).phase == TouchPhase.Began)
         {
