@@ -1,79 +1,80 @@
+using System.Collections;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public class CameraController : MonoBehaviour
 {
+    #region public 변수
     public Weed weed;
     public bool isMove = false;
     public GameObject weedRemoveUI;
-    public bool isTouch = false;
     public Button removeBtn;
     public Slider slider;
+    public Transform target;
+    public bool isFocusing = false;
+    #endregion
 
-    private bool isMoveTouch = false;
-    private float speed = 4f;
-    private Vector2 lastTouchPosition;
-    private float touchTime = 0f;
+    #region private 변수
+    private float cameraMoveSpeed = 1.8f;
+    #endregion
 
-    private void Update()
+    public void MoveCamera(Vector2 deltaPosition)
     {
-        CheckClick();
-
-        if(isTouch)
-        {
-            CheckTouch();
-        }
+        if (weed != null && weed.isWeedRemove || isFocusing) return;
+        this.target = null;
+        deltaPosition = deltaPosition.normalized;
+        transform.Translate(-deltaPosition.x * cameraMoveSpeed * Time.deltaTime, -deltaPosition.y * cameraMoveSpeed * Time.deltaTime, 0);
     }
 
-    private void CheckClick()
+    public void SetFocusTarget(Transform target, Vector3 touchPos)
     {
-        if (Input.touchCount > 1 || Input.touchCount == 0 || EventSystem.current.IsPointerOverGameObject(Input.GetTouch(0).fingerId))
+        weed = target.GetComponent<Weed>();
+        if (this.target != null && this.target == target && !weed.isWeedRemove)
+        {
+            weedRemoveUI.SetActive(true);
+            weedRemoveUI.transform.position = target.position + new Vector3(0.25f, 0.25f, 0);
             return;
+        }
+        this.target = target;
 
-        if (Input.GetTouch(0).phase == TouchPhase.Began)
+        if (weed.isWeedRemove)
         {
-            isMove = false;
-            isTouch = true;
-            touchTime = 0f;
-            lastTouchPosition = Input.GetTouch(0).position;
+            weed.AddRemoveTouchCount();
         }
-        else if (Input.GetTouch(0).phase == TouchPhase.Moved /*&& isMoveTouch*/)
+        else
         {
-            isMove = true;
-            weed = null;
-            weedRemoveUI.SetActive(false);
-            Vector3 delta = Input.GetTouch(0).position - lastTouchPosition;
-            delta = delta.normalized;   
-            transform.Translate(-delta.x * speed * Time.deltaTime, -delta.y * speed * Time.deltaTime, 0);
-            //transform.position = StandardPos();
-            lastTouchPosition = Input.GetTouch(0).position;
-        }
-        else if(Input.GetTouch(0).phase == TouchPhase.Ended)
-        {
-            isTouch = false;
-            isMoveTouch = false;
-            touchTime = 0f;
+            isFocusing = true;
+            if (weed != null)
+            {
+                removeBtn.onClick.RemoveAllListeners();
+                weed.ShowInteractUI();
+            }
+
+            StartCoroutine(FocusOnTarget(this.target, touchPos));
         }
     }
 
-    private void CheckTouch()
+    IEnumerator FocusOnTarget(Transform target, Vector3 touchPos)
     {
-        touchTime += Time.deltaTime;
+        yield return new WaitUntil(() => !TouchManager.instance.isFocusing);
+        TouchManager.instance.isFocusing = true;
+        Vector3 worldPos = Camera.main.ScreenToWorldPoint(new Vector3(touchPos.x, touchPos.y, touchPos.z));
 
-        if (touchTime > 0.5f)
+        while (Vector3.Distance(transform.position, worldPos) > 0.01f)
         {
-            isMoveTouch = true;
+            transform.position = Vector3.Slerp(transform.position, worldPos, 0.2f);
+
+            yield return null;
         }
+        weedRemoveUI.SetActive(true);
+        weedRemoveUI.transform.position = target.position + new Vector3(0.25f, 0.25f, 0);
+        transform.position = worldPos;
+        TouchManager.instance.isFocusing = false;
+        isFocusing = false;
     }
 
-    private Vector3 StandardPos()
+    public void ResetFocus()
     {
-        Vector3 standardVec = transform.position;
-        standardVec.x = Mathf.Clamp(standardVec.x, 0f, 6f);
-        standardVec.y = Mathf.Clamp(standardVec.y, 0f, 6.3f);
-        standardVec.z = -2.21f;
-
-        return standardVec;
+        target = null;
     }
 }
