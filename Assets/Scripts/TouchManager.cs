@@ -16,6 +16,7 @@ public class TouchManager : MonoBehaviour
     private float dragDistanceThreshold = 50f;
     private Vector2 touchStartPos;
     private float touchStartTime;
+    public float touchSensitivity = 0.5f;
     #endregion
 
     private void Awake()
@@ -45,7 +46,8 @@ public class TouchManager : MonoBehaviour
                 float touchDistance = Vector2.Distance(touchStartPos, touch.position);
                 if (touchDistance > dragDistanceThreshold)
                 {
-                    cameraController.MoveCamera(touch.deltaPosition);
+                    // deltaPosition에 민감도를 곱해서 움직임 감소
+                    cameraController.MoveCamera(touch.deltaPosition * touchSensitivity);
                     weed = null;
                 }
             }
