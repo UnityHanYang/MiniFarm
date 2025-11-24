@@ -8,10 +8,12 @@ public class LandPurchaseManager : MonoBehaviour
     public Transform groundParent;
     #endregion
 
+    #region private º¯¼ö
     private int installGroundCount = 0;
     private int maxSideConut = 4;
     private int maxOutSideConut = 16;
     private int rotateMultiple = 0;
+    #endregion
 
     void Start()
     {
