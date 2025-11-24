@@ -15,23 +15,17 @@ public class LandPurchaseManager : MonoBehaviour
     private int rotateMultiple = 0;
     #endregion
 
-    void Start()
-    {
-
-    }
-
-    void Update()
-    {
-
-    }
-
     public void GroundPurchase()
     {
+        if (ShopManager.instance.Money < ShopManager.instance.groundPrice)
+            return;
+
         GameObject ground = Instantiate(groundPrefab, groundParent);
         ground.transform.position = installGroundPos.position;
         installGroundCount++;
         SetGroundRotation(ground);
         installGroundPos = ground.transform.GetChild(1);
+        ShopManager.instance.SetMoneyText(ShopManager.instance.groundPrice);
     }
     private void SetGroundRotation(GameObject ground)
     {

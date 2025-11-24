@@ -3,6 +3,10 @@ using UnityEngine;
 
 public class ShopManager : MonoBehaviour
 {
+    public static ShopManager instance;
+    public TextMeshProUGUI moneyText;
+    public int groundPrice = 5000;
+
     [Header("Shop UI")]
     [SerializeField] private GameObject shopUI;
 
@@ -15,9 +19,20 @@ public class ShopManager : MonoBehaviour
     private readonly Color normalColor = Color.white;
 
     private MenuUI[] allMenus;
+    private int money = 50000;
+
+    public int Money
+    {
+        get
+        {
+            return money;
+        }
+    }
 
     private void Awake()
     {
+        instance = this;
+        moneyText.text = money.ToString("N0");
         allMenus = new MenuUI[] { groundUI, cropsUI, waterUI };
     }
 
@@ -29,6 +44,13 @@ public class ShopManager : MonoBehaviour
     public void CloseShop()
     {
         shopUI.SetActive(false);
+    }
+
+    public void SetMoneyText(int price)
+    {
+        money -= price;
+        money = Mathf.Clamp(money, 0, money);
+        moneyText.text = money.ToString("N0");
     }
 
     public void OpenGroundMenu() => OpenMenu(0);
